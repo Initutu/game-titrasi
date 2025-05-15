@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Asam Basa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #2b6cb0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #edf2f7;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .item-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .item {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .item:hover {
+            transform: scale(1.1);
+        }
+        .beaker {
+            width: 100px;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #ccc;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .liquid {
+            width: 100%;
+            height: 0;
+            background-color: #a0aec0;
+            transition: height 0.5s, background-color 0.5s;
+            position: absolute;
+            bottom: 0;
+        }
+        .ph-meter {
+            width: 200px;
+            height: 40px;
+            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+            border-radius: 5px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .ph-indicator {
+            width: 10px;
+            height: 50px;
+            background-color: black;
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.5s;
+        }
+        .ph-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .ph-label {
+            display: flex;
+            justify-content: space-between;
+            width: 200px;
+            margin-top: 5px;
+        }
+        .reset-btn {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .reset-btn:hover {
+            background-color: #3182ce;
+        }
+        .info-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .result-message {
+            text-align: center;
+            font-weight: bold;
+            height: 24px;
+            margin: 10px 0;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #e2e8f0;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #4299e1;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Uji Asam Basa</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('game')">Permainan</div>
+            <div class="tab" onclick="showTab('info')">Informasi</div>
+        </div>
+        
+        <div id="game" class="tab-content active">
+            <div class="game-container">
+                <div class="info-box">
+                    Klik pada larutan untuk menambahkannya ke dalam gelas kimia dan amati perubahan pH!
+                </div>
+                
+                <div class="game-area">
+                    <div class="beaker">
+                        <div class="liquid" id="liquid"></div>
+                    </div>
+                </div>
+                
+                <div class="ph-meter">
+                    <div class="ph-indicator" id="ph-indicator"></div>
+                </div>
+                
+                <div class="ph-label">
+                    <span>0</span>
+                    <span>7</span>
+                    <span>14</span>
+                </div>
+                
+                <div class="ph-value" id="ph-value">pH: 7</div>
+                
+                <div class="result-message" id="result-message"></div>
+                
+                <div class="item-container">
+                    <div class="item" style="background-color: #FC8181;" onclick="addSubstance('HCl', 1)">HCl</div>
+                    <div class="item" style="background-color: #F6AD55;" onclick="addSubstance('Cuka', 3)">Cuka</div>
+                    <div class="item" style="background-color: #F6E05E;" onclick="addSubstance('Air Jeruk', 2)">Air Jeruk</div>
+                    <div class="item" style="background-color: #68D391;" onclick="addSubstance('Air', 7)">Air</div>
+                    <div class="item" style="background-color: #4FD1C5;" onclick="addSubstance('Sabun', 10)">Sabun</div>
+                    <div class="item" style="background-color: #63B3ED;" onclick="addSubstance('NaOH', 13)">NaOH</div>
+                </div>
+                
+                <button class="reset-btn" onclick="resetBeaker()">Reset</button>
+            </div>
+        </div>
+        
+        <div id="info" class="tab-content">
+            <h2>Asam dan Basa</h2>
+            <p>Asam dan basa adalah zat yang penting dalam kimia dan kehidupan sehari-hari kita.</p>
+            
+            <h3>Asam</h3>
+            <ul>
+                <li>pH di bawah 7</li>
+                <li>Rasa asam</li>
+                <li>Dapat mengubah kertas lakmus biru menjadi merah</li>
+                <li>Contoh: cuka, air jeruk, asam klorida (HCl)</li>
+            </ul>
+            
+            <h3>Basa</h3>
+            <ul>
+                <li>pH di atas 7</li>
+                <li>Rasa pahit</li>
+                <li>Terasa licin</li>
+                <li>Dapat mengubah kertas lakmus merah menjadi biru</li>
+                <li>Contoh: sabun, natrium hidroksida (NaOH)</li>
+            </ul>
+            
+            <h3>Netral</h3>
+            <ul>
+                <li>pH 7</li>
+                <li>Tidak asam dan tidak basa</li>
+                <li>Contoh: air murni</li>
+            </ul>
+            
+            <div class="info-box">
+                Skala pH berkisar dari 0 hingga 14. Semakin rendah nilai pH, semakin asam suatu larutan. Semakin tinggi nilai pH, semakin basa suatu larutan.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPH = 7;
+        let substancesAdded = 0;
+        const maxSubstances = 5;
+        
+        function addSubstance(name, ph) {
+            if (substancesAdded >= maxSubstances) {
+                document.getElementById('result-message').textContent = "Gelas sudah penuh! Klik Reset untuk memulai ulang.";
+                return;
+            }
+            
+            substancesAdded++;
+            
+            // Update the liquid height
+            const liquid = document.getElementById('liquid');
+            liquid.style.height = (substancesAdded * 20) + '%';
+            
+            // Calculate new pH based on mixing
+            currentPH = (currentPH * (substancesAdded - 1) + ph) / substancesAdded;
+            currentPH = Math.round(currentPH * 10) / 10;
+            
+            // Update pH indicator
+            const indicator = document.getElementById('ph-indicator');
+            const position = (currentPH / 14) * 100;
+            indicator.style.left = position + '%';
+            
+            // Update pH value display
+            document.getElementById('ph-value').textContent = `pH: ${currentPH}`;
+            
+            // Update liquid color based on pH
+            updateLiquidColor();
+            
+            // Update result message
+            const resultMessage = document.getElementById('result-message');
+            if (currentPH < 7) {
+                resultMessage.textContent = "Ini adalah larutan asam!";
+                resultMessage.style.color = "#E53E3E";
+            } else if (currentPH > 7) {
+                resultMessage.textContent = "Ini adalah larutan basa!";
+                resultMessage.style.color = "#2B6CB0";
+            } else {
+                resultMessage.textContent = "Ini adalah larutan netral!";
+                resultMessage.style.color = "#2F855A";
+            }
+        }
+        
+        function updateLiquidColor() {
+            const liquid = document.getElementById('liquid');
+            
+            if (currentPH <= 3) {
+                liquid.style.backgroundColor = "#FC8181"; // Merah untuk asam kuat
+            } else if (currentPH <= 6) {
+                liquid.style.backgroundColor = "#F6AD55"; // Oranye untuk asam lemah
+            } else if (currentPH >= 11) {
+                liquid.style.backgroundColor = "#63B3ED"; // Biru untuk basa kuat
+            } else if (currentPH >= 8) {
+                liquid.style.backgroundColor = "#4FD1C5"; // Teal untuk basa lemah
+            } else {
+                liquid.style.backgroundColor = "#68D391"; // Hijau untuk netral
+            }
+        }
+        
+        function resetBeaker() {
+            substancesAdded = 0;
+            currentPH = 7;
+            
+            const liquid = document.getElementById('liquid');
+            liquid.style.height = '0';
+            
+            const indicator = document.getElementById('ph-indicator');
+            indicator.style.left = '50%';
+            
+            document.getElementById('ph-value').textContent = "pH: 7";
+            document.getElementById('result-message').textContent = "";
+        }
+        
+        function showTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Deactivate all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activate the clicked tab
+            const clickedTab = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+            clickedTab.classList.add('active');
+        }
+    </script>
+</body>
+</html>
